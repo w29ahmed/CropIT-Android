@@ -62,11 +62,6 @@ public class MainActivity extends AppCompatActivity {
             testImageView.setImageBitmap(imageBitmap);
         }
         else if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK) {
-            //Uri photoUri = data.getData();
-            // Do something with the photo based on Uri
-            //Bitmap selectedImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoUri);
-            // Load the selected image into a preview
-            //testImageView.setImageURI(photoUri);
             try {
                 final Uri imageUri = data.getData();
                 final InputStream imageStream = getContentResolver().openInputStream(imageUri);
