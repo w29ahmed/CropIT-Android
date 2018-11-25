@@ -1,6 +1,7 @@
 package com.example.waleed.cropit;
 
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -12,8 +13,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.tensorflow.lite.Interpreter;
+
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
     private Button loadPictureButton;
 
     private ImageView testImageView;
+
+    private Interpreter interpreter;
+    //private float[] prediction;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_IMAGE_PICK = 2;
@@ -60,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             testImageView.setImageBitmap(imageBitmap);
+            //interpreter.run(imageBitmap, prediction);
         }
         else if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK) {
             try {
@@ -89,5 +100,19 @@ public class MainActivity extends AppCompatActivity {
         takePictureButton.setOnClickListener(takePictureListener);
         loadPictureButton.setOnClickListener(loadPictureListener);
 
+        // Instantiate tflite interpreter
+        try {
+            AssetFileDescriptor fileDescriptor = getAssets().openFd("mobilenet_v2_1.0_224.tflite");
+            FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+            FileChannel fileChannel = inputStream.getChannel();
+            long startOffset = fileDescriptor.getStartOffset();
+            long declaredLength = fileDescriptor.getDeclaredLength();
+            MappedByteBuffer mapByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
+
+            interpreter = new Interpreter(mapByteBuffer);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
