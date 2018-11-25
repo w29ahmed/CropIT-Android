@@ -64,15 +64,16 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK) {
             try {
-                final Uri imageUri = data.getData();
-                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                Uri imageUri = data.getData();
+                //InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                //Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
                 Intent predictionScreen = new Intent(this, PredictionActivity.class);
-                predictionScreen.putExtra("imageUri", imageUri);
+                predictionScreen.putExtra("Bitmap Image", bitmap);
                 startActivity(predictionScreen);
-                }
-                catch (FileNotFoundException e) {
-                    e.printStackTrace();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
                 Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
             }
         }
