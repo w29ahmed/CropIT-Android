@@ -21,9 +21,6 @@ public class MainActivity extends AppCompatActivity {
     private Button takePictureButton;
     private Button loadPictureButton;
 
-
-    private ImageView testImageView;
-
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_IMAGE_PICK = 2;
 
@@ -55,29 +52,27 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-            @Override
-                protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-                    // TODO: This code could possibly cause slowdowns - look into optimizing loading in the data
-                    if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-                        Bundle extras = data.getExtras();
-                        Bitmap imageBitmap = (Bitmap) extras.get("data");
-                        testImageView.setImageBitmap(imageBitmap);
-                        Intent predictionScreen = new Intent(this, PredictionActivity.class);
-                        predictionScreen.putExtra("image", extras);
-                        startActivity(predictionScreen);
-                    }
-                    else if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK) {
-                        try {
-                            final Uri imageUri = data.getData();
-                            final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                            final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                            testImageView.setImageBitmap(selectedImage);
-                            Intent predictionScreen = new Intent(this, PredictionActivity.class);
-                            predictionScreen.putExtra("imageUri", imageUri);
-                            startActivity(predictionScreen);
-                        }
-                        catch (FileNotFoundException e) {
-                            e.printStackTrace();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO: This code could possibly cause slowdowns - look into optimizing loading in the data
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            Intent predictionScreen = new Intent(this, PredictionActivity.class);
+            predictionScreen.putExtra("image", extras);
+            startActivity(predictionScreen);
+        }
+        else if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK) {
+            try {
+                final Uri imageUri = data.getData();
+                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                Intent predictionScreen = new Intent(this, PredictionActivity.class);
+                predictionScreen.putExtra("imageUri", imageUri);
+                startActivity(predictionScreen);
+                }
+                catch (FileNotFoundException e) {
+                    e.printStackTrace();
                 Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
             }
         }
@@ -91,14 +86,9 @@ public class MainActivity extends AppCompatActivity {
         // Instantiate references to the UI objects
         takePictureButton = (Button)findViewById(R.id.TakePictureButton);
         loadPictureButton = (Button)findViewById(R.id.LoadPictureButton);
-        testImageView = (ImageView)findViewById(R.id.TestImageView);
-
 
         // Connect event handlers
         takePictureButton.setOnClickListener(takePictureListener);
         loadPictureButton.setOnClickListener(loadPictureListener);
-
-
-
     }
 }
