@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -19,8 +20,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Button takePictureButton;
     private Button loadPictureButton;
-
-    private ImageView testImageView;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_IMAGE_PICK = 2;
@@ -59,16 +58,21 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            testImageView.setImageBitmap(imageBitmap);
+            Intent predictionScreen = new Intent(this, PredictionActivity.class);
+            predictionScreen.putExtra("image", extras);
+            startActivity(predictionScreen);
         }
         else if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK) {
             try {
-                final Uri imageUri = data.getData();
-                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                testImageView.setImageBitmap(selectedImage);
+                Uri imageUri = data.getData();
+                //InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                //Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                Intent predictionScreen = new Intent(this, PredictionActivity.class);
+                predictionScreen.putExtra("Bitmap Image", bitmap);
+                startActivity(predictionScreen);
             }
-            catch (FileNotFoundException e) {
+            catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
             }
@@ -83,11 +87,9 @@ public class MainActivity extends AppCompatActivity {
         // Instantiate references to the UI objects
         takePictureButton = (Button)findViewById(R.id.TakePictureButton);
         loadPictureButton = (Button)findViewById(R.id.LoadPictureButton);
-        testImageView = (ImageView)findViewById(R.id.TestImageView);
 
         // Connect event handlers
         takePictureButton.setOnClickListener(takePictureListener);
         loadPictureButton.setOnClickListener(loadPictureListener);
-
     }
 }
